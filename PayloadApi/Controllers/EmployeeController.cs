@@ -38,6 +38,24 @@ namespace PayloadApi.Controllers
             return Ok(employee);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllEmployees()
+        {
+            
+            var employee = await _dbConnection.QueryAsync<Employee>(
+                "GetAllEmployees",
+                commandType: CommandType.StoredProcedure
+            );
+
+            if (employee == null)
+            {
+                return NotFound("No employees found.");
+            }
+
+            return Ok(employee);
+
+        }
+
         // POST: api/employee
         [HttpPost]
         public async Task<IActionResult> InsertEmployee([FromBody] Employee employee)
