@@ -69,6 +69,61 @@ namespace PayloadApi.Controllers
             return BadRequest("Error inserting employee.");
         }
 
+        // PUT: api/employee/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateEmployee(int id, [FromBody] Employee employee)
+        {
+            if (employee == null || id != employee.EmployeeId)
+            {
+                return BadRequest("Invalid data provided.");
+            }
+
+            // Call the UpdateEmployee stored procedure
+            var parameters = new
+            {
+                EmployeeId = id,
+                Name = employee.Name,
+                Position = employee.Position,
+                Salary = employee.Salary,
+                Age = employee.Age
+            };
+
+            var result = await _dbConnection.ExecuteAsync(
+                "UpdateEmployee",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            if (result > 0)
+            {
+                return Ok("Employee updated successfully.");
+            }
+
+            return NotFound("Employee not found.");
+        }
+
+        // DELETE: api/employee/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteEmployee(int id)
+        {
+            // Call the DeleteEmployee stored procedure
+            var parameters = new { EmployeeId = id };
+
+            var result = await _dbConnection.ExecuteAsync(
+                "DeleteEmployee",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            if (result > 0)
+            {
+                return Ok("Employee deleted successfully.");
+            }
+
+            return NotFound("Employee not found.");
+        }
+
+
 
     }
 }
